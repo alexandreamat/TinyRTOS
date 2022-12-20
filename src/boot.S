@@ -6,16 +6,18 @@ _start:
     // Check processor ID is zero (executing on main core), else hang
     mrs     x1, mpidr_el1
     and     x1, x1, #3
-    cbz     x1, 2f
+    cbz     x1, master
     // We're not on the main core, so hang in an infinite wait loop
-1:  wfe
-    b       1b
-2:  // We're on the main core!
 
+proc_hang: wfe
+    b       proc_hang
+
+master:  // We're on the main core!
     // Set stack to start below our code
     ldr     x1, =_start
     mov     sp, x1
 
+el1_entry:
     // Clean the BSS section
     ldr     x1, =__bss_start     // Start address
     ldr     w2, =__bss_size      // Size of the section
@@ -27,4 +29,4 @@ _start:
     // Jump to our main() routine in C (make sure it doesn't return)
 4:  bl      main
     // In case it does return, halt the master core too
-    b       1b
+    b       proc_hang
