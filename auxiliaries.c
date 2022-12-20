@@ -5,8 +5,9 @@
 #include "misc.h"
 #include "mmio.h"
 
-#define UART_MAX_QUEUE (16 * 1024)
-#define SYS_CLOCK_FREQ (500000000)
+// #define UART_RX_BUF_SIZE (16 * 1024)
+// #define UART_TX_BUF_SIZE (16 * 1024)
+
 #define AUX_MU_BAUD(baudrate) ((SYS_CLOCK_FREQ / (baudrate * 8)) - 1)
 
 static void uart_write1(char c);
@@ -26,13 +27,13 @@ void uart_init() {
   mmio_write(AUX_MU_CNTL_REG, 3);  // enable RX/TX
 }
 
-void uart_write(char *buffer) {
-  while (*buffer) {
-    uart_write1(*buffer++);
-  }
-}
+// char* uart_read() {
+//   while (uart_is_data_ready()) {
+//     queue_add(&g_uart_rx_queue, uart_read1());
+//   }
+// }
 
-static void uart_write1(char c) {
+void uart_transmit_char(char c) {
   while (!uart_is_transmitter_empty()) {
   }
   mmio_write(AUX_MU_IO_REG, (unsigned int)c);

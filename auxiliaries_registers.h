@@ -1,3 +1,6 @@
+#ifndef __AUXILIARIES_REGISTERS_H__
+#define __AUXILIARIES_REGISTERS_H__
+
 #include "base_registers.h"
 
 #define AUX_IRQ (AUX_BASE + 0x00)  // Auxiliary Interrupt status
@@ -41,3 +44,11 @@
 #define AUX_SPI2_TXHOLD_REGb (AUX_BASE + 0xF4)  // SPI 2 Extended Data
 #define AUX_SPI2_TXHOLD_REGc (AUX_BASE + 0xF8)  // SPI 2 Extended Data
 #define AUX_SPI2_TXHOLD_REGd (AUX_BASE + 0xFC)  // SPI 2 Extended Data
+
+typedef enum {
+  UART_INTERRUPT_ID_BIT_NONE = 0b00,  // No interrupts
+  UART_INTERRUPT_ID_BIT_TX = 0b01,    // Transmit holding register empty
+  UART_INTERRUPT_ID_BIT_RX = 0b10     // Receiver holds valid byte
+} uart_interrupt_id_bit_t;
+
+#endif  // __AUXILIARIES_REGISTERS_H__

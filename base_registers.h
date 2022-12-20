@@ -1,3 +1,6 @@
+#ifndef __BASE_REGISTERS_H__
+#define __BASE_REGISTERS_H__
+
 #define PERIPHERAL_BASE (0xFE000000)
 
 // Auxiliaries: UART1, SPI1 & SPI2
@@ -16,6 +19,10 @@
 
 // General Purpose I/O (GPIO)
 #define GP_BASE (PERIPHERAL_BASE + 0x200000)
+
+#define GIC_400_BASE (0xFF840000)
+#define ARM_LOCAL_BASE (0xFF800000)
+#define ARMC_BASE (PERIPHERAL_BASE + 0x00B000)
 
 // PCM / I2S Audio
 #define PCM_BASE (PERIPHERAL_BASE + 203000)
@@ -43,3 +50,5 @@
 
 // Timer (ARM side)
 #define ARM_LOCAL (0xFF800000)
+
+#endif  // __BASE_REGISTERS_H__

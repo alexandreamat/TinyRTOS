@@ -1,3 +1,6 @@
+#ifndef __GPIO_REGISTERS_H__
+#define __GPIO_REGISTERS_H__
+
 #include "base_registers.h"
 
 #define GPFSEL0 (GP_BASE + 0x00)
@@ -30,3 +33,5 @@
 #define GPIO_PUP_PDN_CNTRL_REG1 (GP_BASE + 0xE8)
 #define GPIO_PUP_PDN_CNTRL_REG2 (GP_BASE + 0xEC)
 #define GPIO_PUP_PDN_CNTRL_REG3 (GP_BASE + 0xF0)
+
+#endif  // __GPIO_REGISTERS_H__
