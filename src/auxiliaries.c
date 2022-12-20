@@ -5,12 +5,8 @@
 #include "misc.h"
 #include "mmio.h"
 
-// #define UART_RX_BUF_SIZE (16 * 1024)
-// #define UART_TX_BUF_SIZE (16 * 1024)
-
 #define AUX_MU_BAUD(baudrate) ((SYS_CLOCK_FREQ / (baudrate * 8)) - 1)
 
-static void uart_write1(char c);
 static unsigned int uart_is_transmitter_empty();
 
 void uart_init() {
@@ -26,12 +22,6 @@ void uart_init() {
   gpio_select_function(15, GPFSEL_FUNC_ALT5);
   mmio_write(AUX_MU_CNTL_REG, 3);  // enable RX/TX
 }
-
-// char* uart_read() {
-//   while (uart_is_data_ready()) {
-//     queue_add(&g_uart_rx_queue, uart_read1());
-//   }
-// }
 
 void uart_transmit_char(char c) {
   while (!uart_is_transmitter_empty()) {
