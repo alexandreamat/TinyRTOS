@@ -1,3 +1,6 @@
+#ifndef __GPIO_H__
+#define __GPIO_H__
+
 typedef enum {
   GPFSEL_FUNC_INPUT = 0b000,   // GPIO Pin is an input
   GPFSEL_FUNC_OUTPUT = 0b001,  // GPIO Pin is an output
@@ -16,3 +19,5 @@ int gpio_clear(unsigned int pin_number);
 int gpio_pull(unsigned int pin_number, unsigned int value);
 
 int gpio_select_function(unsigned int pin_number, gpfsel_func_t func);
+
+#endif  // __GPIO_H__

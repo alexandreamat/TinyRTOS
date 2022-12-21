@@ -51,5 +51,5 @@ void sos(void) {
   gpio_set(42);
   delay(50);
   gpio_clear(42);
-  delay(50);
+  delay(500);
 }
