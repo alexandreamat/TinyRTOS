@@ -1,0 +1,1 @@
+void morse_send_text(char* text);
