@@ -2,6 +2,8 @@
 
 #include "auxiliaries_registers.h"
 // #include "exceptions_registers.h"
+#include <stdbool.h>
+
 #include "gpio.h"
 #include "misc.h"
 #include "mmio.h"
@@ -20,25 +22,38 @@
 static unsigned int uart_is_transmitter_empty();
 
 void uart_init() {
-  mmio_write(AUX_ENABLES, 1);  // enable UART1
-  mmio_write(AUX_MU_IER_REG, 0);
-  mmio_write(AUX_MU_CNTL_REG, 0);
-  mmio_write(AUX_MU_LCR_REG, 3);  // 8 bits // not 1?
-  mmio_write(AUX_MU_MCR_REG, 0);
-  mmio_write(AUX_MU_IER_REG, 0);
-  mmio_write(AUX_MU_IIR_REG, 0xC6);  // disable interrupts
-  mmio_write(AUX_MU_BAUD_REG, AUX_MU_BAUD(9600));
+  // set GPIO
   gpio_select_function(14, GPFSEL_FUNC_ALT5);
   gpio_select_function(15, GPFSEL_FUNC_ALT5);
-  mmio_write(AUX_MU_CNTL_REG, 3);  // enable RX/TX
+
+  // Enable UART1
+  AUX_ENABLES->mini_uart_enable = true;
+
+  // Disable Tx/Rx while configuring
+  AUX_MU_IER_REG->enable_receive_interrupt = false;
+  AUX_MU_IER_REG->enable_transmit_interrupt = false;
+  AUX_MU_CNTL_REG->receiver_enable = false;
+  AUX_MU_CNTL_REG->transmitter_enable = false;
+
+  // Configure
+  AUX_MU_LCR_REG->data_size_is_8 = true;
+  AUX_MU_MCR_REG->rts_is_low = false;
+  AUX_MU_IIR_REG->on_write.fifo_clear_rx = true;
+  AUX_MU_IIR_REG->on_write.fifo_clear_tx = true;
+  AUX_MU_BAUD_REG->baudrate = AUX_MU_BAUD(9600);
+
+  // Enable Tx/Rx
+  AUX_MU_CNTL_REG->receiver_enable = true;
+  AUX_MU_CNTL_REG->transmitter_enable = true;
+
   // queue_init(&g_uart_tx_queue, g_uart_tx_buf, UART_TX_BUF_SIZE);
   // mmio_write(IRQ0_SET_EN_0, 1 << (VIDEOCORE_IRQ_AUX));
 }
 
 void uart_putc(char c) {
-  while (!uart_is_transmitter_empty()) {
+  while (!AUX_MU_LSR_REG->transmitter_empty) {
   }
-  mmio_write(AUX_MU_IO_REG, (unsigned int)c);
+  AUX_MU_IO_REG->transmit_data_write = (unsigned int)c;
   // queue_add(&g_uart_tx_queue, c);
 }
 
@@ -57,7 +72,3 @@ void uart_putc(char c) {
 //     mmio_write(AUX_MU_IO_REG, (unsigned int)queue_remove(&g_uart_tx_queue));
 //   }
 // }
-
-static unsigned int uart_is_transmitter_empty() {
-  return mmio_read(AUX_MU_LSR_REG) & 0x20;
-}
