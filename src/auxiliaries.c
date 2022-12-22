@@ -19,7 +19,6 @@
 
 // static void uart_isr(void);
 // static void uart_on_tx(void);
-static unsigned int uart_is_transmitter_empty();
 
 void uart_init() {
   // set GPIO
@@ -53,7 +52,7 @@ void uart_init() {
 void uart_putc(char c) {
   while (!AUX_MU_LSR_REG->transmitter_empty) {
   }
-  AUX_MU_IO_REG->transmit_data_write = (unsigned int)c;
+  AUX_MU_IO_REG->transmit_data_write = c;
   // queue_add(&g_uart_tx_queue, c);
 }
 
