@@ -3,7 +3,7 @@
 
 void uart_init();
 
-void uart_transmit_char(char c);
+void uart_putc(char c);
 
 // void auxiliaries_isr(void);
 

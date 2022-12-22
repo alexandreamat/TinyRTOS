@@ -5,6 +5,4 @@
 
 void delay(unsigned int ms);
 
-void sos(void);
-
 #endif  // __MISC_H__
