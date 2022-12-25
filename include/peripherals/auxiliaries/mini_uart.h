@@ -29,23 +29,14 @@ typedef enum {
 } uart_interrupt_id_bit_t;
 
 typedef union {
-  struct {
-    const char receive_data_read : 8;
-    char transmit_data_write : 8;
-  } dlab_off;
-  struct {
-    unsigned int ls_8_bits_baudrate_read_write : 8;
-  } dlab_on;
+  const char rx_data_read : 8;
+  char tx_data_write : 8;
+  unsigned int ls_8_bits_baudrate_read_write : 8;
 } aux_mu_io_reg_t;
 
 typedef union {
-  struct {
-    bool enable_receive_interrupt : 1;   // In the manual Tx
-    bool enable_transmit_interrupt : 1;  // In the manual Rx
-  } dlab_off;
-  struct {
-    unsigned int ms_8_bits_baudrate_read_write : 8;
-  } dlab_on;
+  bool enable_rx_interrupt : 1;  // In the manual Tx
+  bool enable_tx_interrupt : 1;  // In the manual Rx
 } aux_mu_ier_reg_t;
 
 typedef union {
@@ -62,9 +53,10 @@ typedef union {
 
 typedef struct {
   bool data_size_is_8 : 1;
-  int : 5;
+  bool magic_bit : 1;
+  int : 4;
   bool break_ : 1;
-  bool dlab_mode : 1;
+  bool dlab_access : 1;
 } aux_mu_lcr_reg_t;
 
 typedef struct {
@@ -81,8 +73,8 @@ typedef const struct {
 } aux_mu_lsr_reg_t;
 
 typedef struct {
-  bool receiver_enable : 1;
-  bool transmitter_enable : 1;
+  bool rx_enable : 1;
+  bool tx_enable : 1;
   bool enable_rx_auto_flow_ctl_rts : 1;
   bool enable_tx_auto_flow_ctl_cts : 1;
   rts_auto_flow_level_t rts_auto_flow_level : 2;

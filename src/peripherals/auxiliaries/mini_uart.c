@@ -17,37 +17,44 @@ void mini_uart_init() {
   gpio_select_function(TXD0, GPFSEL_FUNC_ALT5);
   gpio_select_function(RXD0, GPFSEL_FUNC_ALT5);
 
-  gpio_select_pull_state(TXD0, GPIO_PULL_STATE_NONE);
-  gpio_select_pull_state(RXD0, GPIO_PULL_STATE_NONE);
-
   AUX_ENABLES->mini_uart_enable = true;
 
-  AUX_MU_CNTL_REG->transmitter_enable = false;
-  AUX_MU_CNTL_REG->receiver_enable = false;
+  AUX_MU_CNTL_REG->tx_enable = false;
+  AUX_MU_CNTL_REG->rx_enable = false;
 
-  AUX_MU_LCR_REG->dlab_mode = false;
-  AUX_MU_IER_REG->dlab_off.enable_receive_interrupt = true;
+  AUX_MU_CNTL_REG->enable_rx_auto_flow_ctl_rts = false;
+  AUX_MU_CNTL_REG->enable_tx_auto_flow_ctl_cts = false;
+
   AUX_MU_LCR_REG->data_size_is_8 = true;
+  AUX_MU_LCR_REG->magic_bit = true;
+  AUX_MU_LCR_REG->break_ = false;
+  AUX_MU_LCR_REG->dlab_access = false;
+
+  AUX_MU_IER_REG->enable_rx_interrupt = false;
+  AUX_MU_IER_REG->enable_tx_interrupt = false;
+
   AUX_MU_MCR_REG->rts_is_low = false;
+
   AUX_MU_IIR_REG->on_write.fifo_clear_rx = true;
   AUX_MU_IIR_REG->on_write.fifo_clear_tx = true;
+
   AUX_MU_BAUD_REG->baudrate = AUX_MU_BAUD(115200);
 
-  AUX_MU_CNTL_REG->transmitter_enable = true;
-  AUX_MU_CNTL_REG->receiver_enable = true;
+  AUX_MU_CNTL_REG->tx_enable = true;
+  AUX_MU_CNTL_REG->rx_enable = true;
 }
 
 void mini_uart_putc(char c) {
-  while (!AUX_MU_LSR_REG->transmitter_empty) {
+  while (!(AUX_MU_LSR_REG->transmitter_empty)) {
   }
-  AUX_MU_IO_REG->dlab_off.transmit_data_write = c;
+  AUX_MU_IO_REG->tx_data_write = c;
   if ('\n' == c) mini_uart_putc('\r');
 }
 
 char mini_uart_getc() {
   while (!AUX_MU_LSR_REG->data_ready) {
   }
-  return AUX_MU_IO_REG->dlab_off.receive_data_read;
+  return AUX_MU_IO_REG->rx_data_read;
 }
 
 void mini_uart_isr(void) {
