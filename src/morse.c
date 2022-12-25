@@ -1,9 +1,9 @@
 #include "morse.h"
 
-#include "gpio.h"
 #include "misc.h"
+#include "peripherals/gpio.h"
 
-#define MORSE_PIN (42)
+#define MORSE_PIN (ACT_CLK)
 #define MORSE_UNIT_MS (50)
 #define MORSE_LINE_MS (MORSE_UNIT_MS * 3)
 #define MORSE_DOT_MS (MORSE_UNIT_MS * 1)

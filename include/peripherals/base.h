@@ -20,6 +20,7 @@
 // General Purpose I/O (GPIO)
 #define GP_BASE (PERIPHERAL_BASE + 0x200000)
 
+// Interrupts
 #define GIC_400_BASE (0xFF840000)
 #define ARM_LOCAL_BASE (0xFF800000)
 #define ARMC_BASE (PERIPHERAL_BASE + 0x00B000)

@@ -1,7 +1,6 @@
-#include "gpio.h"
+#include "peripherals/gpio.h"
 
-#include "gpio_registers.h"
-#include "mmio.h"
+#include "misc.h"
 
 static int gpio_call(unsigned int pin, unsigned int value, unsigned int base,
                      unsigned int field_width) {
@@ -29,6 +28,6 @@ int gpio_set(unsigned int pin) { return gpio_call(pin, 1, GPSET0, 1); }
 
 int gpio_clear(unsigned int pin) { return gpio_call(pin, 1, GPCLR0, 1); }
 
-int gpio_pull(unsigned int pin, unsigned int value) {
+int gpio_select_pull_state(unsigned int pin, gpio_pup_pdn_t value) {
   return gpio_call(pin, value, GPIO_PUP_PDN_CNTRL_REG0, 2);
 }

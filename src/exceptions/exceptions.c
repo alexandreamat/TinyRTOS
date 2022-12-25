@@ -1,8 +1,11 @@
-#include "exceptions.h"
+#include "exceptions/exceptions.h"
 
-#include "auxiliaries.h"
-#include "exceptions_registers.h"
+#include "misc.h"
 #include "morse.h"
+#include "peripherals/armc.h"
+#include "peripherals/auxiliaries/auxiliaries.h"
+#include "peripherals/auxiliaries/mini_uart.h"
+#include "peripherals/gic_400.h"
 #include "printf.h"
 
 static const char *entry_error_messages[] = {
@@ -18,16 +21,14 @@ static const char *entry_error_messages[] = {
     "EXCEPTIONS_SYNC_EL0_32", "EXCEPTIONS_IRQ_EL0_32",
     "EXCEPTIONS_FIQ_EL0_32",  "EXCEPTIONS_ERROR_EL0_32"};
 
-// void exceptions_handle_irq(void) {
-//   morse_send_text("E");
-//   // morse_send_text("IRQ");
-//   volatile unsigned int *base = (unsigned int *)IRQ0_PENDING0;
-//   if (*base & VIDEOCORE_IRQ_AUX) auxiliaries_isr();
-// }
+void exceptions_handle_irq(void) {
+  printf("IN IRQ!!!\n");
+  armc_handle_irq();
+}
 
 void exceptions_handle_unexpected_exception(int type, unsigned long esr,
                                             unsigned long address) {
-  morse_send_text("ERR");
+  morse_send_text("SOS");
   printf("%s, ESR: %x, address: %x\r\n", entry_error_messages[type], esr,
          address);
 }

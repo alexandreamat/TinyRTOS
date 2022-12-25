@@ -1,6 +1,6 @@
 #include "misc.h"
 
-#include "gpio.h"
+#include "peripherals/gpio.h"
 
 void delay(unsigned int ms) {
   register unsigned long frq, pct, r;
@@ -12,3 +12,9 @@ void delay(unsigned int ms) {
     asm volatile("mrs %0, cntpct_el0" : "=r"(r));
   } while (r < pct);
 }
+
+void mmio_write(long int reg, unsigned int val) {
+  *(volatile unsigned int *)reg = val;
+}
+
+unsigned int mmio_read(long int reg) { return *(volatile unsigned int *)reg; }

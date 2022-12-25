@@ -1,7 +1,7 @@
-#ifndef __EXCEPTIONS_REGISTERS_H__
-#define __EXCEPTIONS_REGISTERS_H__
+#ifndef __ARMC_H__
+#define __ARMC_H__
 
-#include "base_registers.h"
+#include "peripherals/base.h"
 
 #define IRQ0_PENDING0 (ARMC_BASE + 0x200)  // ARM Core 0 IRQ Enabled Interrupt Pending bits [31:0]
 #define IRQ0_PENDING1 (ARMC_BASE + 0x204)  // ARM Core 0 IRQ Enabled Interrupt pending bits [63:32]
@@ -50,26 +50,6 @@
 #define SWIRQ_SET (ARMC_BASE + 0x3F0)      // Write to Set Software Interrupt sources
 #define SWIRQ_CLEAR (ARMC_BASE + 0x3F4)    // Write to Clear Software Interrupt sources
 
-#define VIDEOCORE_IRQ_AUX (29)
+void armc_handle_irq(void);
 
-#define EXCEPTIONS_SYNC_EL1T (0)
-#define EXCEPTIONS_IRQ_EL1T (1)
-#define EXCEPTIONS_FIQ_EL1T (2)
-#define EXCEPTIONS_ERROR_EL1T (3)
-
-#define EXCEPTIONS_SYNC_EL1H (4)
-#define EXCEPTIONS_IRQ_EL1H (5)
-#define EXCEPTIONS_FIQ_EL1H (6)
-#define EXCEPTIONS_ERROR_EL1H (7)
-
-#define EXCEPTIONS_SYNC_EL0_64 (8)
-#define EXCEPTIONS_IRQ_EL0_64 (9)
-#define EXCEPTIONS_FIQ_EL0_64 (10)
-#define EXCEPTIONS_ERROR_EL0_64 (11)
-
-#define EXCEPTIONS_SYNC_EL0_32 (12)
-#define EXCEPTIONS_IRQ_EL0_32 (13)
-#define EXCEPTIONS_FIQ_EL0_32 (14)
-#define EXCEPTIONS_ERROR_EL0_32 (15)
-
-#endif  // __EXCEPTIONS_REGISTERS_H__
+#endif  // __ARMC_H__
