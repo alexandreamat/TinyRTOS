@@ -1,6 +1,7 @@
 #include "peripherals/auxiliaries/mini_uart.h"
 
 #include "misc.h"
+#include "morse.h"
 #include "peripherals/auxiliaries/auxiliaries.h"
 #include "peripherals/gic_400.h"
 #include "peripherals/gpio.h"
@@ -30,8 +31,8 @@ void mini_uart_init() {
   AUX_MU_LCR_REG->break_ = false;
   AUX_MU_LCR_REG->dlab_access = false;
 
-  AUX_MU_IER_REG->enable_rx_interrupt = false;
-  AUX_MU_IER_REG->enable_tx_interrupt = false;
+  AUX_MU_IER_REG->enable_rx_interrupt = true;
+  AUX_MU_IER_REG->enable_tx_interrupt = true;
 
   AUX_MU_MCR_REG->rts_is_low = false;
 

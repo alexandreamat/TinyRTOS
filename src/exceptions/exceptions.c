@@ -21,10 +21,7 @@ static const char *entry_error_messages[] = {
     "EXCEPTIONS_SYNC_EL0_32", "EXCEPTIONS_IRQ_EL0_32",
     "EXCEPTIONS_FIQ_EL0_32",  "EXCEPTIONS_ERROR_EL0_32"};
 
-void exceptions_handle_irq(void) {
-  printf("IN IRQ!!!\n");
-  armc_handle_irq();
-}
+void exceptions_handle_irq(void) { armc_handle_irq(); }
 
 void exceptions_handle_unexpected_exception(int type, unsigned long esr,
                                             unsigned long address) {
