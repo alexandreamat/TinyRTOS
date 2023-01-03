@@ -1,12 +1,14 @@
 #include "peripherals/gic_400.h"
 
+#include <stdint.h>
+
 #include "misc.h"
 
 #define GICD_ISENABLER(n) (GICD_ISENABLERn + 4 * (n))
 #define SET_ENABLE_BIT(intid) ((intid) % 32)
 
 #define GICD_ITARGETSR(n) \
-  ((volatile unsigned char *const)(GICD_ITARGETSRn + 4 * (n)))
+  ((volatile unsigned char *const)(uintptr_t)(GICD_ITARGETSRn + 4 * (n)))
 #define CPU_TARGETS_OFFSET_BYTE(intid) ((intid) % 4)
 
 void gic_400_install_irq(unsigned int intid, unsigned int cpu) {
