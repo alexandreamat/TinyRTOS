@@ -25,4 +25,6 @@ extern void exceptions_init_vector_table();
 extern void exceptions_clear_irq_mask_bits();
 extern void exceptions_set_irq_mask_bits();
 
+void exceptions_handle_irq(void);
+
 #endif  // __EXCEPTIONS_H__

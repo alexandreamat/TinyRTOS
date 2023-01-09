@@ -1,12 +1,13 @@
 #include "exceptions/exceptions.h"
 
+#include <stdio.h>
+
 #include "misc.h"
 #include "morse.h"
 #include "peripherals/armc.h"
 #include "peripherals/auxiliaries/auxiliaries.h"
 #include "peripherals/auxiliaries/mini_uart.h"
 #include "peripherals/gic_400.h"
-#include "printf.h"
 
 static const char *entry_error_messages[] = {
     "EXCEPTIONS_SYNC_EL1T",   "EXCEPTIONS_IRQ_EL1T",
@@ -25,7 +26,6 @@ void exceptions_handle_irq(void) { armc_handle_irq(); }
 
 void exceptions_handle_unexpected_exception(int type, unsigned long esr,
                                             unsigned long address) {
-  morse_send_text("SOS");
-  printf("%s, ESR: %x, address: %x\r\n", entry_error_messages[type], esr,
+  printf("%s, ESR: %lx, address: %lx\r\n", entry_error_messages[type], esr,
          address);
 }
