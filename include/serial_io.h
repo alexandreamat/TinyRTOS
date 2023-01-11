@@ -1,0 +1,1 @@
+void serial_io_init(void);

@@ -76,7 +76,7 @@ static void mini_uart_on_rx(void) {
 }
 
 static void mini_uart_on_tx(void) {
-  gpio_set(ACT_CLK);
+  gpio_set(GPIO_ACT_LED);
   delay(50);
-  gpio_clear(ACT_CLK);
+  gpio_clear(GPIO_ACT_LED);
 }

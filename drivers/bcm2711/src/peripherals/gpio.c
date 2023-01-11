@@ -1,6 +1,9 @@
-#include "peripherals/gpio.h"
+#include "gpio.h"
 
 #include "misc.h"
+#include "peripherals/gpio_pinout.h"
+
+extern const int ACT_CLK = 42;
 
 static int gpio_call(unsigned int pin, unsigned int value, unsigned int base,
                      unsigned int field_width) {

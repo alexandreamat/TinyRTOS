@@ -1,5 +1,5 @@
-#ifndef __GPIO_H__
-#define __GPIO_H__
+#ifndef __GPIO_PINTOUT_H__
+#define __GPIO_PINTOUT_H__
 
 #include "peripherals/base.h"
 
@@ -33,8 +33,6 @@
 #define GPIO_PUP_PDN_CNTRL_REG1 (GP_BASE + 0xE8)
 #define GPIO_PUP_PDN_CNTRL_REG2 (GP_BASE + 0xEC)
 #define GPIO_PUP_PDN_CNTRL_REG3 (GP_BASE + 0xF0)
-
-#define ACT_CLK (42)
 
 #define SDA1 (2)
 #define SCL1 (3)
@@ -76,12 +74,4 @@ typedef enum {
   GPIO_PULL_STATE_DOWN = 0b10,  // Pull down resistor is selected
 } gpio_pup_pdn_t;
 
-int gpio_set(unsigned int pin_number);
-
-int gpio_clear(unsigned int pin_number);
-
-int gpio_select_pull_state(unsigned int pin_number, gpio_pup_pdn_t value);
-
-int gpio_select_function(unsigned int pin_number, gpfsel_func_t func);
-
-#endif  // __GPIO_H__
+#endif  // __GPIO_PINTOUT_H__

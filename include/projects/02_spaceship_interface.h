@@ -1,0 +1,1 @@
+void project_02_spaceship_interface_start(void);

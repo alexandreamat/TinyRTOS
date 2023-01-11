@@ -5,8 +5,6 @@
 
 #define BOOL2STR(x) (x ? "true" : "false")
 
-void delay(unsigned int ms);
-
 extern int get_CurrentEL(void);
 
 void mmio_write(long int reg, unsigned int val);
