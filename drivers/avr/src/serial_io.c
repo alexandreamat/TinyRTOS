@@ -6,12 +6,12 @@
 #include "usart.h"
 
 void serial_io_init(void) {
-  USART_Init();
+  usart_init();
 
   static FILE usart_stdout =
-      FDEV_SETUP_STREAM(USART_Transmit, NULL, _FDEV_SETUP_WRITE);
+      FDEV_SETUP_STREAM(usart_transmit, NULL, _FDEV_SETUP_WRITE);
   static FILE usart_stdin =
-      FDEV_SETUP_STREAM(NULL, USART_Receive, _FDEV_SETUP_READ);
+      FDEV_SETUP_STREAM(NULL, usart_receive, _FDEV_SETUP_READ);
   stdout = &usart_stdout;
   stdin = &usart_stdin;
 }

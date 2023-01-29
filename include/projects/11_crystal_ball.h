@@ -1,0 +1,1 @@
+void project_11_crystall_ball_start(void);

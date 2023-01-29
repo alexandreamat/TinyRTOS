@@ -1,13 +1,12 @@
 
 #include <stdio.h>
 
-// #include "delay.h"
-#include <util/delay.h>
-
+#include "delay.h"
 #include "gpio.h"
 #include "interrupts.h"
 #include "morse.h"
 #include "projects/02_spaceship_interface.h"
+#include "projects/11_crystal_ball.h"
 #include "serial_io.h"
 
 #define SLEEP_MS 1000
@@ -21,13 +20,12 @@ int main(void) {
 
   interrupts_init();
 
-  project_02_spaceship_interface_start();
+  // project_02_spaceship_interface_start();
+  project_11_crystall_ball_start();
 
   while (1) {
     gpio_toggle(GPIO_ACT_LED);
-    _delay_ms(SLEEP_MS);
-    // delay(SLEEP_MS);
-    printf("alive\n");
+    delay(SLEEP_MS);
   }
 
   printf("End of the program\n");

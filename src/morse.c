@@ -61,15 +61,15 @@ static void morse_send_letter(char letter) {
 }
 
 static void morse_send_dot() {
-  gpio_set(MORSE_PIN);
+  gpio_write(MORSE_PIN, true);
   delay(MORSE_DOT_MS);
-  gpio_clear(MORSE_PIN);
+  gpio_write(MORSE_PIN, false);
   delay(MORSE_PARTS_SEP_MS);
 }
 
 static void morse_send_line() {
-  gpio_set(MORSE_PIN);
+  gpio_write(MORSE_PIN, true);
   delay(MORSE_LINE_MS);
-  gpio_clear(MORSE_PIN);
+  gpio_write(MORSE_PIN, false);
   delay(MORSE_PARTS_SEP_MS);
 }

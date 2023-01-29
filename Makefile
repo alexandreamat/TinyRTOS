@@ -8,7 +8,7 @@ BUILD_DIR := build
 DRIVER_SRC_DIR := drivers/$(PLATFORM)/src
 DRIVER_BUILD_DIR := $(BUILD_DIR)/$(PLATFORM)
 
-CFLAGS := -v -Wall -Werror -O2 -Iinclude -Idrivers/$(PLATFORM)/include
+CFLAGS := -Wall -Werror -O2 -Iinclude -Idrivers/$(PLATFORM)/include
 LDFLAGS := -lc
 
 C_FILES = $(shell find $(SRC_DIR) -type f -name '*.c')
@@ -40,7 +40,6 @@ else ifeq ($(PLATFORM), avr)
 TARGET := avr
 DEVICE := atmega328p
 F_CPU := 16000000
-PORT := /dev/cu.usbmodem11201
 TOOLCHAIN_DIR := /opt/avr8-gnu-toolchain-darwin_x86_64
 
 CFLAGS += -mmcu=$(DEVICE) -DF_CPU=$(F_CPU) -DAVR

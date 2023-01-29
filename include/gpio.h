@@ -19,8 +19,8 @@ typedef void (*gpio_event_callback_t)(bool);
 
 void gpio_select_function(pin_t pin, gpio_func_t func);
 void gpio_pull(pin_t pin, gpio_pull_t value);
-void gpio_set(pin_t pin);
-void gpio_clear(pin_t pin);
+
 void gpio_toggle(pin_t pin);
 bool gpio_read(pin_t pin);
+void gpio_write(pin_t pin, bool level);
 void gpio_install_event_callback(pin_t pin, gpio_event_callback_t cb);

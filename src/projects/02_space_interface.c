@@ -32,13 +32,13 @@ void project_02_spaceship_interface_start(void) {
 
   while (1) {
     if (g_blink) {
-      gpio_clear(LED_1_GPIO);
+      gpio_write(LED_1_GPIO, false);
       gpio_toggle(LED_2_GPIO);
       gpio_toggle(LED_3_GPIO);
     } else {
-      gpio_set(LED_1_GPIO);
-      gpio_clear(LED_2_GPIO);
-      gpio_clear(LED_3_GPIO);
+      gpio_write(LED_1_GPIO, true);
+      gpio_write(LED_2_GPIO, false);
+      gpio_write(LED_3_GPIO, false);
     }
     delay(100);
   }

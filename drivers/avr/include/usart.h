@@ -1,5 +1,5 @@
 #include <stdio.h>
 
-void USART_Init();
-int USART_Transmit(char data, FILE *stream);
-int USART_Receive(FILE *stream);
+void usart_init();
+int usart_transmit(char data, FILE *stream);
+int usart_receive(FILE *stream);

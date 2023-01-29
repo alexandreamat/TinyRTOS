@@ -1,10 +1,13 @@
 #include "queue.h"
 
 #include <stdbool.h>
+#include <stdlib.h>
 
-void queue_init(queue_t* q, char* buf, size_t buf_size) {
-  q->buf_size = buf_size;
-  q->arr = buf;
+queue_t* queue_init(size_t size) {
+  queue_t* q = calloc(1, sizeof(queue_t));
+  q->size = size + 1;
+  q->arr = calloc(q->size, sizeof(char));
+  return q;
 }
 
 void queue_add(queue_t* q, char val) { q->arr[q->tail++] = val; }

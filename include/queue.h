@@ -6,12 +6,12 @@
 
 typedef struct {
   char* arr;
-  size_t buf_size;
+  size_t size;
   size_t tail;
   size_t head;
 } queue_t;
 
-void queue_init(queue_t* q, char* buf, size_t buf_size);
+queue_t* queue_init(size_t size);
 
 void queue_add(queue_t* q, char val);
 
