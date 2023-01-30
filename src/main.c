@@ -21,7 +21,7 @@ int main(void) {
   interrupts_init();
 
   // project_02_spaceship_interface_start();
-  project_11_crystall_ball_start();
+  project_11_crystal_ball_start();
 
   while (1) {
     gpio_toggle(GPIO_ACT_LED);

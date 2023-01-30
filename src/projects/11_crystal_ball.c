@@ -132,7 +132,7 @@ static const uint8_t CPS[8][8] = {
     },
 };
 
-void project_11_crystall_ball_start(void) {
+void project_11_crystal_ball_start(void) {
   hd44780u_init();
   hd44780u_write_string("Hello world!");
   (void)CPS;
