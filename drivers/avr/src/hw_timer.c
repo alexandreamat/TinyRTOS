@@ -6,6 +6,14 @@
 #include <stddef.h>
 #include <stdio.h>
 
+/* ====== Preprocessor Definitions ====== */
+
+#define HW_TIMER_0_TCNT_MAX (0xFF)
+#define HW_TIMER_1_WIDTH (0xFFFF)
+#define HW_TIMER_2_WIDTH (0xFF)
+
+/* ====== Type Definitions ====== */
+
 typedef struct {
   uint8_t val;
   uint8_t mode;
@@ -24,6 +32,8 @@ typedef struct {
   hw_timer_func_t* cb;
 } hw_timer_input_t;
 
+/* ====== Static Variables ====== */
+
 static hw_timer_func_t hw_timer_0_compa_func = {0};
 static hw_timer_func_t hw_timer_0_compb_func = {0};
 static hw_timer_func_t hw_timer_0_ovf_func = {0};
@@ -36,6 +46,12 @@ static hw_timer_func_t hw_timer_1_capt_func = {0};
 static hw_timer_func_t hw_timer_2_compa_func = {0};
 static hw_timer_func_t hw_timer_2_compb_func = {0};
 static hw_timer_func_t hw_timer_2_ovf_func = {0};
+
+static clock_t hw_timer_clock_overflow_count = 0;
+
+clock_t __CLOCKS_PER_SEC__ = F_CPU / HW_TIMER_CLOCK_PRESCALE;
+
+/* ====== Static Function Declarations ====== */
 
 static void hw_timer_0_install(uint8_t wave_gen_mode, unsigned prescaler,
                                hw_timer_func_t* overflow_cb,
@@ -62,6 +78,10 @@ static uint8_t (*hw_timer_1_prescaler_to_clock_select)(unsigned prescaler) =
 
 static uint8_t hw_timer_2_prescaler_to_clock_select(unsigned prescaler);
 
+static void hw_timer_on_clock_overflow(void*);
+
+/* ====== External Function Definitions ====== */
+
 void hw_timer_create(hw_timer_func_t* func, unsigned time_ms) {
   hw_timer_1_install(
       4, 1024, NULL,
@@ -69,43 +89,17 @@ void hw_timer_create(hw_timer_func_t* func, unsigned time_ms) {
       NULL, NULL);
 }
 
-static uint8_t hw_timer_0_prescaler_to_clock_select(unsigned prescaler) {
-  switch (prescaler) {
-    case 1:
-      return 1;
-    case 8:
-      return 2;
-    case 64:
-      return 3;
-    case 256:
-      return 4;
-    case 1024:
-      return 5;
-    default:
-      return 0;
-  }
+void hw_timer_start_clock(void) {
+  hw_timer_0_install(0, HW_TIMER_CLOCK_PRESCALE,
+                     &(hw_timer_func_t){.ref = &hw_timer_on_clock_overflow},
+                     NULL, NULL);
 }
 
-static uint8_t hw_timer_2_prescaler_to_clock_select(unsigned prescaler) {
-  switch (prescaler) {
-    case 1:
-      return 1;
-    case 8:
-      return 2;
-    case 32:
-      return 3;
-    case 64:
-      return 4;
-    case 128:
-      return 5;
-    case 256:
-      return 6;
-    case 1024:
-      return 7;
-    default:
-      return 0;
-  }
+clock_t hw_timer_clock(void) {
+  return hw_timer_clock_overflow_count * HW_TIMER_0_TCNT_MAX + TCNT0;
 }
+
+/* ====== Static Function Definitions ====== */
 
 static void hw_timer_0_install(uint8_t wave_gen_mode, unsigned prescaler,
                                hw_timer_func_t* overflow_cb,
@@ -117,19 +111,19 @@ static void hw_timer_0_install(uint8_t wave_gen_mode, unsigned prescaler,
   TCCR0B = (clock_select << CS00) | (((wave_gen_mode >> 2) & 1u) << WGM02);
   TCNT0 = 0;
   if (output_a) {
-    hw_timer_1_compa_func = *output_a->cb;
+    hw_timer_0_compa_func = *output_a->cb;
     TCCR0A |= output_a->mode << COM0A0;
     OCR0A = output_a->val;
     TIMSK0 |= 1 << OCIE0A;
   }
   if (output_b) {
-    hw_timer_1_compb_func = *output_b->cb;
+    hw_timer_0_compb_func = *output_b->cb;
     TCCR0A |= output_b->mode << COM0B0;
     OCR0B = output_b->val;
     TIMSK0 |= 1 << OCIE0B;
   }
   if (overflow_cb) {
-    hw_timer_1_ovf_func = *overflow_cb;
+    hw_timer_0_ovf_func = *overflow_cb;
     TIMSK0 |= 1 << TOIE0;
   }
 }
@@ -179,21 +173,64 @@ static void hw_timer_2_install(uint8_t wave_gen_mode, unsigned prescaler,
   TCCR2B = (clock_select << CS20) | (((wave_gen_mode >> 2) & 1u) << WGM22);
   TCNT2 = 0;
   if (output_a) {
-    hw_timer_1_compa_func = *output_a->cb;
+    hw_timer_2_compa_func = *output_a->cb;
     TCCR2A |= output_a->mode << COM2A0;
     OCR2A = output_a->val;
     TIMSK2 |= 1 << OCIE2A;
   }
   if (output_b) {
-    hw_timer_1_compb_func = *output_b->cb;
+    hw_timer_2_compb_func = *output_b->cb;
     TCCR2A |= output_b->mode << COM2B0;
     OCR2B = output_b->val;
     TIMSK2 |= 1 << OCIE2B;
   }
   if (overflow_cb) {
-    hw_timer_1_ovf_func = *overflow_cb;
+    hw_timer_2_ovf_func = *overflow_cb;
     TIMSK2 |= 1 << TOIE2;
   }
+}
+
+static uint8_t hw_timer_0_prescaler_to_clock_select(unsigned prescaler) {
+  switch (prescaler) {
+    case 1:
+      return 1;
+    case 8:
+      return 2;
+    case 64:
+      return 3;
+    case 256:
+      return 4;
+    case 1024:
+      return 5;
+    default:
+      return 0;
+  }
+}
+
+static uint8_t hw_timer_2_prescaler_to_clock_select(unsigned prescaler) {
+  switch (prescaler) {
+    case 1:
+      return 1;
+    case 8:
+      return 2;
+    case 32:
+      return 3;
+    case 64:
+      return 4;
+    case 128:
+      return 5;
+    case 256:
+      return 6;
+    case 1024:
+      return 7;
+    default:
+      return 0;
+  }
+}
+
+static void hw_timer_on_clock_overflow(void* _) {
+  (void)_;
+  hw_timer_clock_overflow_count++;
 }
 
 ISR(TIMER0_COMPA_vect) { hw_timer_0_compa_func.ref(hw_timer_0_compa_func.arg); }
