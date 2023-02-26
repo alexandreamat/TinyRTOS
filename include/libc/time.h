@@ -9,7 +9,11 @@
 
 #define CLOCKS_PER_SEC (__CLOCKS_PER_SEC__)
 
+#define CLOCK_PRESCALE (64)
+
 extern clock_t __CLOCKS_PER_SEC__;
+
+void clock_start(void);
 
 clock_t clock(void);
 

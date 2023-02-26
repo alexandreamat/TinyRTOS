@@ -4,6 +4,7 @@
 #include "delay.h"
 #include "gpio.h"
 #include "interrupts.h"
+#include "libc/time.h"
 #include "morse.h"
 #include "projects/02_spaceship_interface.h"
 #include "projects/11_crystal_ball.h"
@@ -19,9 +20,7 @@ int main(void) {
   printf("Starting TinyRTOS\n");
 
   interrupts_init();
-
-  // project_02_spaceship_interface_start();
-  project_11_crystal_ball_start();
+  clock_start();
 
   while (1) {
     gpio_toggle(GPIO_ACT_LED);
