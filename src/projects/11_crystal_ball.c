@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <util/delay.h>
 
-#include "hd44780u.h"
+#include "peripherals/hd44780u.h"
 
 static const char ESC = '\033';
 static const char DEL = '\177';
@@ -139,14 +139,14 @@ void project_11_crystal_ball_start(void) {
   // hd44780u_load_character_patterns(4, CPS);
   while (1) {
     char c = '\0';
-    c = getc(stdin);
+    c = (char)getc(stdin);
     if (ESC == c) {
-      c = getc(stdin);
+      c = (char)getc(stdin);
       if ('[' != c) {
         printf("Unrecognised keystroke: \\033%c\n", c);
         continue;
       }
-      c = getc(stdin);
+      c = (char)getc(stdin);
       switch (c) {
         case 'A':
           hd44780u_move_up();

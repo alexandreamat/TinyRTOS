@@ -1,1 +1,0 @@
-void interrupts_init(void);

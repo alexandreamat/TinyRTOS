@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "delay.h"
-#include "gpio.h"
+#include "hal/delay.h"
+#include "hal/gpio.h"
 
 #if defined(AVR)
 #include "gpio_pinout.h"
