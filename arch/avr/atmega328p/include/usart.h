@@ -3,8 +3,10 @@
 
 #include <stdio.h>
 
-void usart_init();
-int usart_transmit(char data, FILE *stream);
-int usart_receive(FILE *stream);
+#define USART_BAUD (9600)
+
+void usart_init(void);
+int usart_transmit(char data);
+int usart_receive(void);
 
 #endif  // __USART_H__
