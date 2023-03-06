@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include <stdint.h>
 
+#include "libc/time.h"
 #include "utils/queue.h"
 
 #define USART_RX_Q_SIZE (127)

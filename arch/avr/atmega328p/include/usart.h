@@ -6,7 +6,7 @@
 #define USART_BAUD (9600)
 
 void usart_init(void);
-int usart_transmit(char data);
-int usart_receive(void);
+void usart_transmit(char data);
+char usart_receive(void);
 
 #endif  // __USART_H__
