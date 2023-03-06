@@ -8,10 +8,6 @@
 
 /* ====== Preprocessor Definitions ====== */
 
-#define TIMER_COUNTER_0_TCNT_MAX (0xFF)
-#define TIMER_COUNTER_1_TCNT_MAX (0xFFFF)
-#define TIMER_COUNTER_2_TCNT_MAX (0xFF)
-
 /* ====== Static Variables ====== */
 
 static timer_counter_func_t timer_counter_0_compa_func = NULL;

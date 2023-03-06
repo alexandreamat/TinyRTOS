@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define TIMER_COUNTER_0_TCNT_MAX (0xFF)
-#define TIMER_COUNTER_1_TCNT_MAX (0xFFFF)
-#define TIMER_COUNTER_2_TCNT_MAX (0xFF)
+#define TIMER_COUNTER_0_TCNT_MAX (UINT8_MAX)
+#define TIMER_COUNTER_1_TCNT_MAX (UINT16_MAX)
+#define TIMER_COUNTER_2_TCNT_MAX (UINT8_MAX)
 
 /* ====== Type Definitions ====== */
 
