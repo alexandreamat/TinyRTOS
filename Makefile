@@ -8,7 +8,7 @@ TARGET_ARCH_DIR = arch/$(TARGET_ARCH)
 TARGET_ARCH_SRC_DIR = arch/$(TARGET_ARCH)/src
 TARGET_ARCH_BUILD_DIR = $(BUILD_DIR)/$(TARGET_ARCH)
 
-CFLAGS = -ffreestanding -Wall -Wextra -Werror -O2 -Iinclude -I$(TARGET_ARCH_DIR)/include
+CFLAGS = -Wall -Wextra -Werror -O2 -Iinclude -I$(TARGET_ARCH_DIR)/include
 LDFLAGS = -lc
 
 C_FILES = $(shell find $(SRC_DIR) -type f -name '*.c')
