@@ -1,9 +1,10 @@
 #include "peripherals/auxiliaries/mini_uart.h"
 
+#include "hal/gpio.h"
 #include "misc.h"
 #include "peripherals/auxiliaries/auxiliaries.h"
 #include "peripherals/gic_400.h"
-#include "peripherals/gpio.h"
+#include "peripherals/gpio_pinout.h"
 #include "peripherals/videocore.h"
 #include "utils/morse.h"
 

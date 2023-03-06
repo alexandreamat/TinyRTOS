@@ -1,5 +1,5 @@
-#ifndef __GPIO_PINTOUT_H__
-#define __GPIO_PINTOUT_H__
+#ifndef __GPIO_PINOUT_H__
+#define __GPIO_PINOUT_H__
 
 #include "peripherals/base.h"
 
@@ -74,4 +74,4 @@ typedef enum {
   GPIO_PULL_STATE_DOWN = 0b10,  // Pull down resistor is selected
 } gpio_pup_pdn_t;
 
-#endif  // __GPIO_PINTOUT_H__
+#endif  // __GPIO_PINOUT_H__
