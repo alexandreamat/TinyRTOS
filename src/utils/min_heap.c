@@ -3,11 +3,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* ====== Preprocessor Definitions ====== */
-
 /* ====== Type Definitions ====== */
 
-/* ====== Static Variables ====== */
+typedef struct min_heap_node_s min_heap_node_t;
+
+struct min_heap_node_s {
+  void* val;
+  min_heap_node_t* parent;
+  min_heap_node_t* left;
+  min_heap_node_t* right;
+};
+
+struct min_heap {
+  min_heap_node_t* root;
+  size_t size;
+  min_heap_cmp_t cmp;
+};
 
 /* ====== Static Function Declarations ====== */
 
@@ -50,7 +61,9 @@ void* min_heap_pop(min_heap_t* heap) {
   return val;
 }
 
-void* min_heap_peek(min_heap_t* heap) { return heap->root->val; }
+void* min_heap_peek(min_heap_t* heap) {
+  return heap->size ? heap->root->val : NULL;
+}
 
 void min_heap_print(min_heap_t* heap) {
   printf("Heap size = %u\n", heap->size);

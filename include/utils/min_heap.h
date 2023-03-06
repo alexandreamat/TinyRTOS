@@ -3,22 +3,9 @@
 
 #include <stdlib.h>
 
+typedef struct min_heap min_heap_t;
+
 typedef int (*min_heap_cmp_t)(void*, void*);
-
-typedef struct min_heap_node_s min_heap_node_t;
-
-struct min_heap_node_s {
-  void* val;
-  min_heap_node_t* parent;
-  min_heap_node_t* left;
-  min_heap_node_t* right;
-};
-
-typedef struct {
-  min_heap_node_t* root;
-  size_t size;
-  min_heap_cmp_t cmp;
-} min_heap_t;
 
 min_heap_t* min_heap_create(min_heap_cmp_t cmp);
 
