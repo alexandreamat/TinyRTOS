@@ -3,3 +3,4 @@
 *.img
 .vscode
 *.wip
+build
