@@ -1,6 +1,7 @@
 #ifndef __TIMER_COUNTER_H__
 #define __TIMER_COUNTER_H__
 
+#include <avr/io.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -69,10 +70,10 @@ void timer_counter_2_set_attrs(timer_counter_2_wgm_t wave_gen_mode,
                                timer_counter_8_bit_output_t* output_a,
                                timer_counter_8_bit_output_t* output_b);
 
-uint8_t timer_counter_0_get_count(void);
+static inline uint8_t timer_counter_0_get_count(void) { return TCNT0; }
 
-uint16_t timer_counter_1_get_count(void);
+static inline uint16_t timer_counter_1_get_count(void) { return TCNT1; }
 
-uint8_t timer_counter_2_get_count(void);
+static inline uint8_t timer_counter_2_get_count(void) { return TCNT2; }
 
 #endif  // __TIMER_COUNTER_H__
