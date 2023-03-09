@@ -6,8 +6,9 @@
 
 #define USART_BAUD (9600)
 
-void usart_init(bool tx_int);
-void usart_transmit(char c);
+extern void (*usart_transmit)(char c);
+
+void usart_init(bool tx_buffered, bool tx_int);
 char usart_receive(void);
 void usart_flush(void);
 

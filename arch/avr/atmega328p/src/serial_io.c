@@ -8,7 +8,7 @@ static int serial_io_stdout_put(char c, FILE* stream);
 static int serial_io_stdin_get(FILE* stream);
 
 void serial_io_init(void) {
-  usart_init(false);
+  usart_init(true, true);
   static FILE usart_stdout =
       FDEV_SETUP_STREAM(&serial_io_stdout_put, NULL, _FDEV_SETUP_WRITE);
   static FILE usart_stdin =
