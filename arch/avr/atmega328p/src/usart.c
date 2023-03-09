@@ -3,6 +3,7 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdint.h>
+#include <util/atomic.h>
 
 #include "libc/time.h"
 #include "utils/queue.h"
@@ -10,8 +11,18 @@
 /* ====== Preprocessor Definitions ====== */
 
 #define USART_RX_Q_SIZE (127)
-#define USART_TX_Q_SIZE (512)
+#define USART_TX_Q_SIZE (800)
 #define USART_UCSZ_8_BIT (3)
+#define USART_ATOMIC_TX()                                            \
+  for (char x = ({                                                   \
+         ATOMIC_BLOCK(ATOMIC_RESTORESTATE) UCSR0B &= ~(1 << TXCIE0); \
+         1;                                                          \
+       });                                                           \
+       ({                                                            \
+         ATOMIC_BLOCK(ATOMIC_RESTORESTATE) UCSR0B |= (1 << TXCIE0);  \
+         x;                                                          \
+       });                                                           \
+       x = 0)
 
 /* ====== Static Variables ====== */
 
@@ -34,7 +45,7 @@ static inline char usart_rx_char(void);
 
 ISR(USART_RX_vect) { usart_on_rx_ready(); }
 
-ISR(USART_TX_vect) { usart_on_tx_ready(); }
+ISR(USART_TX_vect) { USART_ATOMIC_TX() usart_on_tx_ready(); }
 
 void usart_init(bool tx_buffered, bool tx_int) {
   if (tx_buffered) {
@@ -64,8 +75,11 @@ void usart_flush(void) {
 /* ====== Static Function Definitions ====== */
 
 static inline void usart_transmit_buffered(char c) {
-  queue_char_push(g_usart_tx_q, c);
-  if (usart_is_tx_ready()) usart_on_tx_ready();
+  USART_ATOMIC_TX() {
+    if (queue_is_full(g_usart_tx_q)) return;
+    queue_char_push(g_usart_tx_q, c);
+    if (usart_is_tx_ready()) usart_on_tx_ready();
+  }
 }
 
 static inline void usart_transmit_unbuffered(char c) {
