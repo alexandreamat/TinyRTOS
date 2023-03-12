@@ -1,3 +1,5 @@
+#ifndef DEBUG
+
 #include "usart.h"
 
 #include <avr/interrupt.h>
@@ -105,3 +107,5 @@ static inline bool usart_is_rx_ready(void) { return UCSR0A & (1 << RXC0); }
 static inline void usart_tx_char(char c) { UDR0 = c; }
 
 static inline char usart_rx_char(void) { return UDR0; }
+
+#endif

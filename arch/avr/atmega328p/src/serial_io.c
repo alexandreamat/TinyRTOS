@@ -1,5 +1,11 @@
 #include "hal/serial_io.h"
 
+#ifdef DEBUG
+
+void serial_io_init(void) {}
+
+#else
+
 #include <stdio.h>
 
 #include "usart.h"
@@ -28,3 +34,5 @@ static int serial_io_stdin_get(FILE* stream) {
   (void)stream;
   return (int)usart_receive();
 }
+
+#endif  // DEBUG

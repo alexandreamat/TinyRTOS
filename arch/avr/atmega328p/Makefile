@@ -5,6 +5,12 @@ F_CPU = 16000000
 
 CFLAGS += -mmcu=$(DEVICE) -DF_CPU=$(F_CPU) -DAVR
 
+ifeq ($(DEBUG), 1)
+	AVR_STUB_SRC_DIR = $(TARGET_ARCH_DIR)/../avr_debug/avr8-stub
+	C_FILES += $(wildcard $(AVR_STUB_SRC_DIR)/*.c)
+    CFLAGS += -I$(AVR_STUB_SRC_DIR)
+endif
+
 all: $(TARGET_ARCH_BUILD_DIR)/kernel.hex
 
 download: $(TARGET_ARCH_BUILD_DIR)/kernel.hex

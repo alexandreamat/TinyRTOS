@@ -7,9 +7,14 @@
 #include "libc/time.h"
 #include "utils/morse.h"
 
-#define SLEEP_MS 1000
+#ifdef DEBUG
+#include "avr8-stub.h"
+#endif
 
 int main(void) {
+#ifdef DEBUG
+  debug_init();
+#endif
   gpio_select_function(GPIO_ACT_LED, GPIO_FUNC_OUTPUT);
   morse_send_text("START");
   interrupts_init();
