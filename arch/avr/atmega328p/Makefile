@@ -13,8 +13,11 @@ endif
 
 all: $(TARGET_ARCH_BUILD_DIR)/kernel.hex
 
-upload: $(TARGET_ARCH_BUILD_DIR)/kernel.hex
+%.stamp: %
 	avrdude -p $(DEVICE) -c arduino -P $(PORT) -b 115200 -U flash:w:$<
+	touch $@
+
+upload: $(TARGET_ARCH_BUILD_DIR)/kernel.hex.stamp
 
 display:
 	cat $(PORT)
