@@ -7,11 +7,8 @@
 #undef CLOCKS_PER_SEC
 #endif
 
-#define CLOCKS_PER_SEC (__CLOCKS_PER_SEC__)
-
-#define CLOCK_PRESCALE (64)
-
-extern clock_t __CLOCKS_PER_SEC__;
+extern const clock_t CLOCKS_PER_SEC;
+extern const unsigned long CYCLES_PER_CLOCK;
 
 void clock_start(void);
 
