@@ -2,13 +2,12 @@
 
 #include "timer_counter.h"
 
-#define CLOCK_PRESCALE (64)
+#define CLOCK_PRESCALE (8)
 
-const clock_t CLOCKS_PER_SEC = F_CPU / CLOCK_PRESCALE;
-const unsigned long CYCLES_PER_CLOCK =
-    CLOCK_PRESCALE * (TIMER_COUNTER_0_TCNT_MAX + 1);
+const clock_t CLOCKS_PER_SEC = F_CPU / (CLOCK_PRESCALE * TIMER_COUNTER_0_SIZE);
+const unsigned long CYCLES_PER_CLOCK = CLOCK_PRESCALE * TIMER_COUNTER_0_SIZE;
 
-static size_t clock_overflow_count = 0;
+clock_t clock_overflow_count = 0;
 
 static void clock_on_overflow(void) { clock_overflow_count++; }
 
