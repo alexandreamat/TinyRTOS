@@ -58,9 +58,9 @@ void timer_core_stop(void) {
 /* ====== Static Function Definitions ====== */
 
 static void timer_core_set_attrs(clock_t duration) {
-  long duration_cycles = duration * CYCLES_PER_CLOCK;
+  unsigned long duration_cycles = duration * CYCLES_PER_CLOCK;
   for (size_t i = TIMER_COUNTER_2_PRESCALERS_SIZE - 1; i > 0; i--) {
-    long overflow_cycles =
+    unsigned long overflow_cycles =
         TIMER_COUNTER_2_PRESCALERS[i] * (TIMER_COUNTER_2_TCNT_MAX + 1);
     if (overflow_cycles > duration_cycles) continue;
     timer_core.prescaler = TIMER_COUNTER_2_PRESCALERS[i];
@@ -72,7 +72,7 @@ static void timer_core_set_attrs(clock_t duration) {
     return;
   }
   for (size_t i = TIMER_COUNTER_1_PRESCALERS_SIZE - 1; i > 0; i--) {
-    long overflow_cycles =
+    unsigned long overflow_cycles =
         TIMER_COUNTER_1_PRESCALERS[i] * (TIMER_COUNTER_1_TCNT_MAX + 1);
     if (overflow_cycles >= duration_cycles) continue;
     timer_core.prescaler = TIMER_COUNTER_1_PRESCALERS[i];
