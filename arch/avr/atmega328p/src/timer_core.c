@@ -4,13 +4,14 @@
 #include <stdlib.h>
 
 #include "timer_counter.h"
+#include "utils/debug.h"
 
 /* ====== Static Variables ====== */
 
 static struct {
   unsigned prescaler;
   size_t remaining_overflows;
-  uint16_t remaining_clocks;
+  uint16_t remaining_count;
   timer_core_func_t func;
   void (*arm_overflow_timer)(void);
   void (*arm_output_match_timer)(void);
@@ -51,36 +52,36 @@ void timer_core_start(timer_core_func_t func, clock_t duration) {
 void timer_core_stop(void) {
   timer_core.disarm_timer();
   timer_core.remaining_overflows = 0;
-  timer_core.remaining_clocks = 0;
+  timer_core.remaining_count = 0;
   timer_core.func = NULL;
 }
 
 /* ====== Static Function Definitions ====== */
 
 static void timer_core_set_attrs(clock_t duration) {
-  unsigned long duration_cycles = duration * CYCLES_PER_CLOCK;
-  for (size_t i = TIMER_COUNTER_2_PRESCALERS_SIZE - 1; i > 0; i--) {
-    unsigned long overflow_cycles =
-        TIMER_COUNTER_2_PRESCALERS[i] * (TIMER_COUNTER_2_TCNT_MAX + 1);
-    if (overflow_cycles > duration_cycles) continue;
-    timer_core.prescaler = TIMER_COUNTER_2_PRESCALERS[i];
-    timer_core.remaining_overflows = duration_cycles / overflow_cycles;
-    timer_core.remaining_clocks = duration_cycles % overflow_cycles;
-    timer_core.arm_overflow_timer = &timer_core_arm_overflow_timer_2;
-    timer_core.arm_output_match_timer = &timer_core_arm_output_match_timer_2;
-    timer_core.disarm_timer = &timer_core_disarm_timer_2;
-    return;
-  }
   for (size_t i = TIMER_COUNTER_1_PRESCALERS_SIZE - 1; i > 0; i--) {
-    unsigned long overflow_cycles =
-        TIMER_COUNTER_1_PRESCALERS[i] * (TIMER_COUNTER_1_TCNT_MAX + 1);
-    if (overflow_cycles >= duration_cycles) continue;
+    uint32_t duration_count =
+        duration * CYCLES_PER_CLOCK / TIMER_COUNTER_1_PRESCALERS[i];
+    // breakpoint();
+    if (TIMER_COUNTER_1_SIZE >= duration_count) continue;
     timer_core.prescaler = TIMER_COUNTER_1_PRESCALERS[i];
-    timer_core.remaining_overflows = duration_cycles / overflow_cycles;
-    timer_core.remaining_clocks = duration_cycles % overflow_cycles;
+    timer_core.remaining_overflows = duration_count / TIMER_COUNTER_1_SIZE;
+    timer_core.remaining_count = duration_count % TIMER_COUNTER_1_SIZE;
     timer_core.arm_overflow_timer = &timer_core_arm_overflow_timer_1;
     timer_core.arm_output_match_timer = &timer_core_arm_output_match_timer_1;
     timer_core.disarm_timer = &timer_core_disarm_timer_1;
+    return;
+  }
+  for (size_t i = TIMER_COUNTER_2_PRESCALERS_SIZE - 2; i > 0; i--) {
+    uint16_t duration_count =
+        duration * CYCLES_PER_CLOCK / TIMER_COUNTER_2_PRESCALERS[i];
+    if (TIMER_COUNTER_2_SIZE >= duration_count) continue;
+    timer_core.prescaler = TIMER_COUNTER_2_PRESCALERS[i];
+    timer_core.remaining_overflows = duration_count / TIMER_COUNTER_2_SIZE;
+    timer_core.remaining_count = duration_count % TIMER_COUNTER_2_SIZE;
+    timer_core.arm_overflow_timer = &timer_core_arm_overflow_timer_2;
+    timer_core.arm_output_match_timer = &timer_core_arm_output_match_timer_2;
+    timer_core.disarm_timer = &timer_core_disarm_timer_2;
     return;
   }
   return;
@@ -88,7 +89,7 @@ static void timer_core_set_attrs(clock_t duration) {
 
 static void timer_core_on_overflow(void) {
   if (--timer_core.remaining_overflows) return;
-  if (timer_core.remaining_clocks) {
+  if (timer_core.remaining_count) {
     timer_core.arm_output_match_timer();
   } else {
     timer_core_on_output_match();
@@ -98,7 +99,7 @@ static void timer_core_on_overflow(void) {
 static void timer_core_on_output_match(void) {
   timer_core.disarm_timer();
   timer_core.remaining_overflows = 0;
-  timer_core.remaining_clocks = 0;
+  timer_core.remaining_count = 0;
   timer_core.prescaler = 0;
   timer_core.disarm_timer = NULL;
   timer_core.arm_overflow_timer = NULL;
@@ -123,7 +124,7 @@ static void timer_core_arm_output_match_timer_1(void) {
       TIMER_COUNTER_1_WGM_NORMAL, timer_core.prescaler, NULL,
       &(timer_counter_16_bit_output_t){.cb = &timer_core_on_output_match,
                                        .mode = TIMER_COUNTER_OUTPUT_MODE_NORMAL,
-                                       .val = timer_core.remaining_clocks},
+                                       .val = timer_core.remaining_count},
       NULL, NULL);
 }
 
@@ -133,7 +134,7 @@ static void timer_core_arm_output_match_timer_2(void) {
                             &(timer_counter_8_bit_output_t){
                                 .cb = &timer_core_on_output_match,
                                 .mode = TIMER_COUNTER_OUTPUT_MODE_NORMAL,
-                                .val = (uint8_t)timer_core.remaining_clocks},
+                                .val = (uint8_t)timer_core.remaining_count},
                             NULL);
 }
 

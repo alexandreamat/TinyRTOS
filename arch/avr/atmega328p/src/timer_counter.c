@@ -5,8 +5,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
-/* ====== Preprocessor Definitions ====== */
-
+#include "libc/time.h"
+#include "utils/debug.h"
 /* ====== Static Variables ====== */
 
 static timer_counter_func_t timer_counter_0_compa_func = NULL;
@@ -21,6 +21,17 @@ static timer_counter_func_t timer_counter_1_capt_func = NULL;
 static timer_counter_func_t timer_counter_2_compa_func = NULL;
 static timer_counter_func_t timer_counter_2_compb_func = NULL;
 static timer_counter_func_t timer_counter_2_ovf_func = NULL;
+
+const unsigned TIMER_COUNTER_0_PRESCALERS[] = {0, 1, 8, 64, 256, 1024};
+const unsigned TIMER_COUNTER_1_PRESCALERS[] = {0, 1, 8, 64, 256, 1024};
+const unsigned TIMER_COUNTER_2_PRESCALERS[] = {0, 1, 8, 32, 64, 128, 256, 1024};
+
+const size_t TIMER_COUNTER_0_PRESCALERS_SIZE =
+    sizeof(TIMER_COUNTER_0_PRESCALERS) / sizeof(TIMER_COUNTER_0_PRESCALERS[0]);
+const size_t TIMER_COUNTER_1_PRESCALERS_SIZE =
+    sizeof(TIMER_COUNTER_1_PRESCALERS) / sizeof(TIMER_COUNTER_1_PRESCALERS[0]);
+const size_t TIMER_COUNTER_2_PRESCALERS_SIZE =
+    sizeof(TIMER_COUNTER_2_PRESCALERS) / sizeof(TIMER_COUNTER_2_PRESCALERS[0]);
 
 /* ====== Static Function Declarations ====== */
 
@@ -38,9 +49,10 @@ void timer_counter_0_set_attrs(timer_counter_0_wgm_t wave_gen_mode,
                                timer_counter_func_t overflow_cb,
                                timer_counter_8_bit_output_t* output_a,
                                timer_counter_8_bit_output_t* output_b) {
-  TCCR0B = 0;  // stop the timer
-  TIMSK0 = 0;  // disable interrupts
-  TCNT0 = 0;   // reset counter
+  TCCR0B = 0;    // stop the timer
+  TIMSK0 = 0;    // disable interrupts
+  TIFR0 = 0xFF;  // clear pending interrupts
+  TCNT0 = 0;     // reset counter
 
   // set wave generation mode
   TCCR0A = (((wave_gen_mode >> 0) & 1u) << WGM00) |
@@ -81,9 +93,10 @@ void timer_counter_1_set_attrs(timer_counter_1_wgm_t wave_gen_mode,
                                timer_counter_16_bit_output_t* output_a,
                                timer_counter_16_bit_output_t* output_b,
                                timer_counter_input_t* input) {
-  TCCR1B = 0;  // stop the timer
-  TIMSK1 = 0;  // disable interrupts
-  TCNT1 = 0;   // reset the counter
+  TCCR1B = 0;    // stop the timer
+  TIMSK1 = 0;    // disable interrupts
+  TIFR1 = 0xFF;  // clear pending interrupts
+  TCNT1 = 0;     // reset the counter
 
   // set wave generation mode
   TCCR1A = (((wave_gen_mode >> 0) & 1u) << WGM10) |
@@ -98,14 +111,15 @@ void timer_counter_1_set_attrs(timer_counter_1_wgm_t wave_gen_mode,
     OCR1A = output_a->val;
     TIMSK1 |= 1 << OCIE1A;
   } else {
+    OCR1A = 0;
     timer_counter_1_compa_func = NULL;
-    TIMSK1 &= ~(1 << OCIE1A);
   }
   if (output_b) {
     timer_counter_1_compb_func = output_b->cb;
     TCCR1A |= output_b->mode << COM1B0;
     OCR1B = output_b->val;
   } else {
+    OCR1B = 0;
     timer_counter_1_compb_func = NULL;
   }
   if (input) {
@@ -133,7 +147,7 @@ void timer_counter_2_set_attrs(timer_counter_2_wgm_t wave_gen_mode,
                                timer_counter_8_bit_output_t* output_b) {
   TCCR2B = 0;    // stop the timer
   TIMSK2 = 0;    // disable interrupts
-  TIFR2 = 0xFF;  // clear any pending interrupt flags
+  TIFR2 = 0xFF;  // clear pending interrupts
   TCNT2 = 0;     // reset the counter
 
   // set wave generation mode
@@ -148,6 +162,7 @@ void timer_counter_2_set_attrs(timer_counter_2_wgm_t wave_gen_mode,
     OCR2A = output_a->val;
     TIMSK2 |= 1 << OCIE2A;
   } else {
+    OCR2A = 0;
     timer_counter_2_compa_func = NULL;
   }
   if (output_b) {
@@ -156,6 +171,7 @@ void timer_counter_2_set_attrs(timer_counter_2_wgm_t wave_gen_mode,
     OCR2B = output_b->val;
     TIMSK2 |= 1 << OCIE2B;
   } else {
+    OCR2B = 0;
     timer_counter_2_compb_func = NULL;
   }
   if (overflow_cb) {
@@ -172,89 +188,63 @@ void timer_counter_2_set_attrs(timer_counter_2_wgm_t wave_gen_mode,
 /* ====== Static Function Definitions ====== */
 
 static uint8_t timer_counter_0_prescaler_to_clock_select(unsigned prescaler) {
-  switch (prescaler) {
-    case 1:
-      return 1;
-    case 8:
-      return 2;
-    case 64:
-      return 3;
-    case 256:
-      return 4;
-    case 1024:
-      return 5;
-    default:
-      return 0;
-  }
+  for (size_t i = 0; i < TIMER_COUNTER_0_PRESCALERS_SIZE; i++)
+    if (prescaler == TIMER_COUNTER_0_PRESCALERS[i]) return i;
+  return 0;
 }
 
 static uint8_t timer_counter_2_prescaler_to_clock_select(unsigned prescaler) {
-  switch (prescaler) {
-    case 1:
-      return 1;
-    case 8:
-      return 2;
-    case 32:
-      return 3;
-    case 64:
-      return 4;
-    case 128:
-      return 5;
-    case 256:
-      return 6;
-    case 1024:
-      return 7;
-    default:
-      return 0;
-  }
+  for (size_t i = 0; i < TIMER_COUNTER_2_PRESCALERS_SIZE; i++)
+    if (prescaler == TIMER_COUNTER_2_PRESCALERS[i]) return i;
+  return 0;
 }
 
 ISR(TIMER0_COMPA_vect) {
-  timer_counter_0_compa_func();
   TIFR0 = 1 << OCF0A;
+  timer_counter_0_compa_func();
 }
 
 ISR(TIMER0_COMPB_vect) {
-  timer_counter_0_compb_func();
   TIFR0 = 1 << OCF0B;
+  timer_counter_0_compb_func();
 }
 
 ISR(TIMER0_OVF_vect) {
-  timer_counter_0_ovf_func();
   TIFR0 = 1 << TOIE0;
+  timer_counter_0_ovf_func();
 }
 
 ISR(TIMER1_COMPA_vect) {
-  timer_counter_1_compa_func();
   TIFR1 = 1 << OCF1A;
+  timer_counter_1_compa_func();
 }
 
 ISR(TIMER1_COMPB_vect) {
-  timer_counter_1_compb_func();
   TIFR1 = 1 << OCF1B;
+  timer_counter_1_compb_func();
 }
 
 ISR(TIMER1_OVF_vect) {
-  timer_counter_1_ovf_func();
   TIFR1 = 1 << TOIE1;
+  timer_counter_1_ovf_func();
 }
 
 ISR(TIMER1_CAPT_vect) {
-  timer_counter_1_capt_func();
   TIFR1 = 1 << ICIE1;
+  timer_counter_1_capt_func();
 }
 
 ISR(TIMER2_COMPA_vect) {
-  timer_counter_2_compa_func();
   TIFR2 = 1 << OCF2A;
+  timer_counter_2_compa_func();
 }
 
 ISR(TIMER2_COMPB_vect) {
-  timer_counter_2_compb_func();
   TIFR2 = 1 << OCF2B;
+  timer_counter_2_compb_func();
 }
 
 ISR(TIMER2_OVF_vect) {
-  timer_counter_2_ovf_func();
   TIFR2 = 1 << TOIE2;
+  timer_counter_2_ovf_func();
 }
