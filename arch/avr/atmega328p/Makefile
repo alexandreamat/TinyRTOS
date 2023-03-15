@@ -2,6 +2,7 @@ ARCH = avr
 TOOLCHAIN_PREFIX = $(ARCH)
 DEVICE = atmega328p
 F_CPU = 16000000
+PORT = /dev/cu.usbmodem*
 
 CFLAGS += -mmcu=$(DEVICE) -DF_CPU=$(F_CPU) -DAVR
 
@@ -11,13 +12,13 @@ ifeq ($(DEBUG), 1)
     CFLAGS += -I$(AVR_STUB_SRC_DIR)
 endif
 
-all: $(TARGET_ARCH_BUILD_DIR)/kernel.hex
+all: $(TARGET_ARCH_BUILD_DIR)/kernel$(DEBUG).hex
 
 %.stamp: %
 	avrdude -p $(DEVICE) -c arduino -P $(PORT) -b 115200 -U flash:w:$<
 	touch $@
 
-upload: $(TARGET_ARCH_BUILD_DIR)/kernel.hex.stamp
+upload: $(TARGET_ARCH_BUILD_DIR)/kernel$(DEBUG).hex.stamp
 
 display:
 	cat $(PORT)
