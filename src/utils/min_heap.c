@@ -18,6 +18,7 @@ struct min_heap {
   min_heap_node_t* root;
   size_t size;
   min_heap_cmp_t cmp;
+  min_heap_print_t print;
 };
 
 /* ====== Static Function Declarations ====== */
@@ -34,13 +35,15 @@ static void min_heap_node_heap_down(min_heap_cmp_t cmp, min_heap_node_t* node);
 
 static inline void min_heap_swap(void** a, void** b);
 
-static void min_heap_node_print(min_heap_node_t* node, size_t indent);
+static void min_heap_node_print(min_heap_node_t* node, size_t indent,
+                                min_heap_print_t print_val_cb);
 
 /* ====== External Function Definitions ====== */
 
-min_heap_t* min_heap_create(min_heap_cmp_t cmp) {
+min_heap_t* min_heap_create(min_heap_cmp_t cmp, min_heap_print_t print) {
   min_heap_t* heap = calloc(1, sizeof(min_heap_t));
   heap->cmp = cmp;
+  heap->print = print;
   return heap;
 }
 
@@ -68,7 +71,7 @@ void* min_heap_peek(min_heap_t* heap) {
 void min_heap_print(min_heap_t* heap) {
   printf("Heap size = %u\n", heap->size);
   if (heap->root) {
-    min_heap_node_print(heap->root, 0);
+    min_heap_node_print(heap->root, 0, heap->print);
   } else {
     puts("Heap is empty\n");
   }
@@ -160,7 +163,7 @@ static void min_heap_node_heap_down(min_heap_cmp_t cmp, min_heap_node_t* node) {
     if (cmp(node->left->val, node->val) > 0 &&
         cmp(node->right->val, node->val) > 0)
       return;
-    if (cmp(node->right->val, node->left->val)) {
+    if (cmp(node->right->val, node->left->val) > 0) {
       min_heap_swap(&node->left->val, &node->val);
       min_heap_node_heap_down(cmp, node->left);
     } else {
@@ -168,7 +171,7 @@ static void min_heap_node_heap_down(min_heap_cmp_t cmp, min_heap_node_t* node) {
       min_heap_node_heap_down(cmp, node->right);
     }
   } else if (node->left) {
-    if (cmp(node->left->val, node->val)) return;
+    if (cmp(node->left->val, node->val) > 0) return;
     min_heap_swap(&node->left->val, &node->val);
     min_heap_node_heap_down(cmp, node->left);
   }
@@ -180,10 +183,12 @@ static inline void min_heap_swap(void** a, void** b) {
   *b = tmp;
 }
 
-static void min_heap_node_print(min_heap_node_t* node, size_t indent) {
+static void min_heap_node_print(min_heap_node_t* node, size_t indent,
+                                min_heap_print_t print) {
   if (!node) return;
-  min_heap_node_print(node->right, indent + 4);
+  min_heap_node_print(node->right, indent + 4, print);
   for (size_t i = 0; i < indent; i++) putchar(' ');
-  printf("%p\n", node->val);
-  min_heap_node_print(node->left, indent + 4);
+  print(node->val);
+  putchar('\n');
+  min_heap_node_print(node->left, indent + 4, print);
 }

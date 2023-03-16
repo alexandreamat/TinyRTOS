@@ -7,7 +7,9 @@ typedef struct min_heap min_heap_t;
 
 typedef int (*min_heap_cmp_t)(void*, void*);
 
-min_heap_t* min_heap_create(min_heap_cmp_t cmp);
+typedef void (*min_heap_print_t)(void*);
+
+min_heap_t* min_heap_create(min_heap_cmp_t cmp, min_heap_print_t print);
 
 void min_heap_free(min_heap_t* heap);
 
