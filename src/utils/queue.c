@@ -39,7 +39,7 @@ void queue_push(queue_t* q, void* val) {
 void queue_pop(queue_t* q, void* val) {
   memcpy(val, &q->arr[q->head], q->item_size);
   q->head += q->item_size;
-  q->tail %= q->size * q->item_size;
+  q->head %= q->size * q->item_size;
 }
 
 bool queue_is_empty(queue_t* q) { return q->head == q->tail; }
