@@ -43,3 +43,7 @@ void queue_pop(queue_t* q, void* val) {
 }
 
 bool queue_is_empty(queue_t* q) { return q->head == q->tail; }
+
+bool queue_is_full(queue_t* q) {
+  return (q->head - 1) % (q->size * q->item_size) == q->tail;
+}
