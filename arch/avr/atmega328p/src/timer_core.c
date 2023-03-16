@@ -50,6 +50,7 @@ void timer_core_start(timer_core_func_t func, clock_t duration) {
 }
 
 void timer_core_stop(void) {
+  if (!timer_core.disarm_timer) return;
   timer_core.disarm_timer();
   timer_core.remaining_overflows = 0;
   timer_core.remaining_count = 0;
